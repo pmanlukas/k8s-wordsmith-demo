@@ -17,4 +17,5 @@ jobs:
       run: mvn package --file words/pom.xml
     
     - run: |
-        docker build . -f words/Dockerfile -t lpmlops.azurecr.io/k8s-wordsmith-api:${{ github.sha }}
+        cd words
+        docker build . -t lpmlops.azurecr.io/k8s-wordsmith-api:${{ github.sha }}
