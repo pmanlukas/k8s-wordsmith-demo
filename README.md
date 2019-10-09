@@ -1,4 +1,4 @@
-# Kubernetes Wordsmith Demo
+# Kubernetes Wordsmith Demo for Lighthouse
 
 Wordsmith is the demo project shown at DockerCon EU 2017, where Docker announced that support for Kubernetes was coming to the Docker platform.
 
