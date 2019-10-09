@@ -1,0 +1,56 @@
+name: Docker Image CI and K8s
+
+on:
+  pull_request:
+    branches:
+    - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    
+    - uses: Azure/docker-login@v1
+      with:
+        login-server: lpmlops.azurecr.io
+        username: ${{ secrets.REGISTRY_USERNAME }}
+        password: ${{ secrets.REGISTRY_PASSWORD }}
+    
+    - run: |
+        cd words
+        docker build . -t lpmlops.azurecr.io/k8s-wordsmith-api:${{ github.sha }}
+        docker push lpmlops.azurecr.io/k8s-wordsmith-api:${{ github.sha }}
+        cd ..
+        cd db
+        docker build . -t lpmlops.azurecr.io/k8s-wordsmith-db:${{ github.sha }}
+        docker push lpmlops.azurecr.io/k8s-wordsmith-db:${{ github.sha }}
+        cd ..
+        cd web
+        docker build . -t lpmlops.azurecr.io/k8s-wordsmith-web:${{ github.sha }}
+        docker push lpmlops.azurecr.io/k8s-wordsmith-web:${{ github.sha }}
+      
+    # Set the target AKS cluster.
+    - uses: Azure/aks-set-context@v1
+      with:
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        resourceGroupName: 'mlops'
+        clusterName: 'lighthouse'
+        
+    - uses: Azure/k8s-create-secret@v1
+      with:
+        container-registry-url: lpmlops.azurecr.io
+        container-registry-username: ${{ secrets.REGISTRY_USERNAME }}
+        container-registry-password: ${{ secrets.REGISTRY_PASSWORD }}
+        secret-name: demo-k8s-secret
+
+    - uses: Azure/k8s-deploy@v1
+      with:
+        manifests: |
+          kube-deployment.yml
+        images: |
+          lpmlops.azurecr.io/k8s-wordsmith-api:${{ github.sha }}
+          lpmlops.azurecr.io/k8s-wordsmith-db:${{ github.sha }}
+          lpmlops.azurecr.io/k8s-wordsmith-web:${{ github.sha }}
+        imagepullsecrets: |
+          demo-k8s-secret
