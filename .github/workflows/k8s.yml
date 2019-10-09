@@ -34,8 +34,8 @@ jobs:
     - uses: Azure/aks-set-context@v1
       with:
         creds: '${{ secrets.AZURE_CREDENTIALS }}'
-        resourceGroupName: 'mlops'
-        clusterName: 'lighthouse'
+        cluster-name: mlops
+        resource-group: lighthouse
         
     - uses: Azure/k8s-create-secret@v1
       with:
