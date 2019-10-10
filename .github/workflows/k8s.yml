@@ -1,9 +1,6 @@
 name: Docker Image CI and K8s
 
-on:
-  pull_request:
-    branches:
-    - master
+on: [push]
 
 jobs:
   build:
@@ -34,8 +31,8 @@ jobs:
     - uses: azure/aks-set-context@v1
       with:
         creds: '${{ secrets.AZURE_CREDENTIALS }}' # Azure credentials
-        resourceGroupName: 'mlops'
         clusterName: 'lighthouse'
+        resourceGroupName: 'mlops'
       id: login
         
     - uses: Azure/k8s-create-secret@v1
