@@ -28,11 +28,11 @@ jobs:
         docker push lpmlops.azurecr.io/k8s-wordsmith-web:${{ github.sha }}
       
     # Set the target AKS cluster.        
-    - uses: azure/aks-set-context@v1
+    - uses: Azure/aks-set-context@v1
       with:
-        creds: '${{ secrets.AZURE_CREDENTIALS }}' # Azure credentials
-        clusterName: lighthouse
-        resourceGroupName: mlops
+        creds: '${{ secrets.AZURE_CREDENTIALS }}'
+        cluster-name: lighthouse
+        resource-group: mlops
       id: login
         
     - uses: Azure/k8s-create-secret@v1
